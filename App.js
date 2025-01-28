@@ -1,94 +1,137 @@
 import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 
 import HomeScreen from './screens/HomeScreen';
 import CircleScreen from './screens/CircleScreen';
 import AccountScreen from './screens/AccountScreen';
+import SettingsScreen from './screens/SettingsScreen';
 
 const Drawer = createDrawerNavigator();
 
+function CustomDrawerContent(props) {
+  return (
+    <View style={{ flex: 1 }}>
+      <DrawerContentScrollView {...props}>
+        <DrawerItemList {...props} />
+      </DrawerContentScrollView>
+      
+      {/* Settings en bas */}
+      <TouchableOpacity 
+        style={styles.settingsButton}
+        onPress={() => {
+          props.navigation.navigate('Settings');
+          props.navigation.closeDrawer();
+        }}
+      >
+        <Ionicons name="settings-outline" size={28} color="#fff" />
+        <Text style={styles.settingsText}>Paramètres</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+function DrawerNavigator() {
+  const theme = useTheme();
+
+  return (
+    <Drawer.Navigator 
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      initialRouteName="Home"
+      screenOptions={({ navigation }) => ({
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: theme.colors.primary,
+          height: 150,
+          elevation: 0,
+          shadowOpacity: 0,
+          borderBottomWidth: 0,
+        },
+        headerTintColor: theme.colors.card,
+        headerTitle: '',
+        headerLeft: () => null,
+        headerRight: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.openDrawer()}
+            style={{ 
+              marginRight: 25,
+              marginTop: 15,
+              padding: 10
+            }}
+          >
+            <Ionicons name="reorder-three" size={45} color={theme.colors.card} />
+          </TouchableOpacity>
+        ),
+        drawerPosition: 'right',
+        drawerStyle: {
+          backgroundColor: theme.colors.primary,
+          width: 300,
+        },
+        drawerActiveTintColor: theme.colors.card,
+        drawerInactiveTintColor: theme.colors.card,
+        drawerLabelStyle: {
+          fontSize: 22,
+          fontWeight: '500',
+          marginLeft: 12,
+          marginVertical: 8,
+        },
+        drawerItemStyle: {
+          marginVertical: 5,
+          borderRadius: 10,
+          paddingVertical: 5,
+        },
+        sceneContainerStyle: {
+          backgroundColor: theme.colors.background
+        },
+        overlayColor: 'transparent',
+      })}
+    >
+      <Drawer.Screen 
+        name="Home" 
+        component={HomeScreen} 
+        options={{ title: 'Accueil' }}
+      />
+      <Drawer.Screen 
+        name="Circle" 
+        component={CircleScreen} 
+        options={{ title: 'Mon Cercle' }}
+      />
+      <Drawer.Screen 
+        name="Account" 
+        component={AccountScreen} 
+        options={{ title: 'Mon Compte' }}
+      />
+      <Drawer.Screen 
+        name="Settings" 
+        component={SettingsScreen} 
+        options={{ 
+          title: 'Paramètres',
+          drawerItemStyle: { height: 0 }
+        }} 
+      />
+    </Drawer.Navigator>
+  );
+}
+
 export default function App() {
   return (
-    <NavigationContainer>
-      <Drawer.Navigator 
-        initialRouteName="Home"
-        screenOptions={({ navigation }) => ({
-          headerShown: true,
-          headerStyle: {
-            backgroundColor: '#CD5C5C',
-            height: 150,  // Augmentation de la hauteur à 150
-            elevation: 0,
-            shadowOpacity: 0,
-            borderBottomWidth: 0,
-          },
-          headerTintColor: '#fff',
-          headerTitle: '',
-          headerLeft: () => null,
-          headerRight: () => (
-            <TouchableOpacity 
-              onPress={() => navigation.openDrawer()}
-              style={{ 
-                marginRight: 25,
-                marginTop: 15,
-                padding: 10
-              }}
-            >
-              <Ionicons name="reorder-three" size={45} color="#fff" />
-            </TouchableOpacity>
-          ),
-          drawerPosition: 'right',
-          drawerStyle: {
-            backgroundColor: '#CD5C5C', // Même couleur que le fond
-            width: 300,
-          },
-          drawerActiveTintColor: '#fff',
-          drawerInactiveTintColor: '#fff',
-          drawerLabelStyle: {
-            fontSize: 22,
-            fontWeight: '500',
-            marginLeft: 12,
-            marginVertical: 8,
-          },
-          drawerItemStyle: {
-            marginVertical: 5,
-            borderRadius: 10,
-            paddingVertical: 5,
-          },
-          sceneContainerStyle: {
-            backgroundColor: '#CD5C5C' // Même couleur que le fond
-          },
-          overlayColor: 'transparent', // Rend l'overlay transparent
-        })}
-      >
-        <Drawer.Screen 
-          name="Home" 
-          component={HomeScreen} 
-          options={{ title: 'Accueil' }}
-        />
-        <Drawer.Screen 
-          name="Circle" 
-          component={CircleScreen} 
-          options={{ title: 'Mon Cercle' }}
-        />
-        <Drawer.Screen 
-          name="Account" 
-          component={AccountScreen} 
-          options={{ title: 'Mon Compte' }}
-        />
-      </Drawer.Navigator>
-      <StatusBar style="light" />
-    </NavigationContainer>
+    <ThemeProvider>
+      <NavigationContainer>
+        <DrawerNavigator />
+        <StatusBar style="light" />
+      </NavigationContainer>
+    </ThemeProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#CD5C5C',  // Indian Red, un rouge plus mat
+    backgroundColor: '#CD5C5C',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -109,5 +152,19 @@ const styles = StyleSheet.create({
     color: '#CD5C5C',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  settingsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.2)',
+    marginBottom: 20,
+  },
+  settingsText: {
+    color: '#fff',
+    fontSize: 22,
+    marginLeft: 12,
+    fontWeight: '500',
   }
 });
