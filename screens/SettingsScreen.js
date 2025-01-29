@@ -81,25 +81,15 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#CD5C5C',
+    backgroundColor: '#FFFFFF',
   },
   settingsContainer: {
     backgroundColor: '#fff',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
     marginTop: 20,
     paddingHorizontal: 20,
     paddingTop: 30,
     paddingBottom: 50,
     minHeight: '100%',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -4,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
   },
   settingItem: {
     flexDirection: 'row',

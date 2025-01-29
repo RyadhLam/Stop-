@@ -1,11 +1,15 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Animated, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import * as Location from 'expo-location';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function CircleScreen() {
   const [contacts, setContacts] = useState([]);
   const [selectedContact, setSelectedContact] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [emergencyLocation, setEmergencyLocation] = useState(null);
+  const pulseAnim = useRef(new Animated.Value(1)).current;
 
   const addContact = () => {
     setContacts([...contacts, { 
@@ -13,7 +17,8 @@ export default function CircleScreen() {
       name: `Contact ${contacts.length + 1}`,
       phone: "06 XX XX XX XX",
       email: "contact@email.com",
-      relation: "Ami(e)"
+      relation: "Ami(e)",
+      photo: null
     }]);
   };
 
@@ -24,6 +29,89 @@ export default function CircleScreen() {
   const openContactInfo = (contact) => {
     setSelectedContact(contact);
     setModalVisible(true);
+  };
+
+  const pickImage = async (contactId) => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (status !== 'granted') {
+      Alert.alert('Permission refusée', 'Nous avons besoin de votre permission pour accéder à vos photos');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setContacts(contacts.map(contact => 
+        contact.id === contactId 
+          ? { ...contact, photo: result.assets[0].uri }
+          : contact
+      ));
+    }
+  };
+
+  useEffect(() => {
+    // Simuler la réception d'une alerte (à remplacer par votre système de notification)
+    const checkEmergencies = async () => {
+      if (emergencyLocation) {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          return;
+        }
+
+        let currentLocation = await Location.getCurrentPositionAsync({});
+        
+        // Calculer la distance
+        const distance = calculateDistance(
+          currentLocation.coords.latitude,
+          currentLocation.coords.longitude,
+          emergencyLocation.latitude,
+          emergencyLocation.longitude
+        );
+
+        // Ajuster la vitesse de pulsation en fonction de la proximité
+        const pulseDuration = Math.max(300, Math.min(2000, distance * 10));
+        startPulse(pulseDuration);
+      }
+    };
+
+    const interval = setInterval(checkEmergencies, 5000);
+    return () => clearInterval(interval);
+  }, [emergencyLocation]);
+
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    // Formule de Haversine pour calculer la distance
+    const R = 6371; // Rayon de la Terre en km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
+  const startPulse = (duration) => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.3,
+          duration: duration,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: duration,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
   };
 
   return (
@@ -50,12 +138,19 @@ export default function CircleScreen() {
             style={styles.contactCircle}
             onPress={() => openContactInfo(contact)}
           >
-            <Text style={styles.contactText}>{contact.name}</Text>
+            {contact.photo ? (
+              <Image 
+                source={{ uri: contact.photo }} 
+                style={styles.contactPhoto}
+              />
+            ) : (
+              <Text style={styles.contactText}>{contact.name}</Text>
+            )}
             <TouchableOpacity 
-              style={styles.deleteButton}
-              onPress={() => removeContact(contact.id)}
+              style={styles.editPhotoButton}
+              onPress={() => pickImage(contact.id)}
             >
-              <Ionicons name="close-circle" size={24} color="#CD5C5C" />
+              <Ionicons name="camera" size={16} color="#CD5C5C" />
             </TouchableOpacity>
           </TouchableOpacity>
         </View>
@@ -80,9 +175,22 @@ export default function CircleScreen() {
             {selectedContact && (
               <>
                 <View style={styles.contactHeader}>
-                  <View style={styles.contactAvatar}>
-                    <Ionicons name="person" size={40} color="#CD5C5C" />
-                  </View>
+                  <TouchableOpacity 
+                    style={styles.contactAvatar}
+                    onPress={() => pickImage(selectedContact.id)}
+                  >
+                    {selectedContact.photo ? (
+                      <Image 
+                        source={{ uri: selectedContact.photo }} 
+                        style={styles.modalPhoto}
+                      />
+                    ) : (
+                      <Ionicons name="person" size={40} color="#CD5C5C" />
+                    )}
+                    <View style={styles.editIconContainer}>
+                      <Ionicons name="camera" size={16} color="#fff" />
+                    </View>
+                  </TouchableOpacity>
                   <Text style={styles.contactName}>{selectedContact.name}</Text>
                 </View>
 
@@ -122,7 +230,7 @@ export default function CircleScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#CD5C5C',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -152,7 +260,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 150,
     height: 2,
-    backgroundColor: '#fff',
+    backgroundColor: '#CD5C5C',
     top: '50%',
     left: '50%',
     transformOrigin: 'left',
@@ -273,5 +381,41 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     fontSize: 16,
     color: '#333',
+  },
+  contactPhoto: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  editPhotoButton: {
+    position: 'absolute',
+    right: -5,
+    bottom: -5,
+    backgroundColor: '#fff',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#CD5C5C',
+  },
+  modalPhoto: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  editIconContainer: {
+    position: 'absolute',
+    right: -5,
+    bottom: -5,
+    backgroundColor: '#CD5C5C',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#fff',
   },
 }); 

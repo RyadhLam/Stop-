@@ -45,13 +45,13 @@ function DrawerNavigator() {
       screenOptions={({ navigation }) => ({
         headerShown: true,
         headerStyle: {
-          backgroundColor: theme.colors.primary,
+          backgroundColor: '#FFFFFF',
           height: 150,
           elevation: 0,
           shadowOpacity: 0,
           borderBottomWidth: 0,
         },
-        headerTintColor: theme.colors.card,
+        headerTintColor: '#CD5C5C',
         headerTitle: '',
         headerLeft: () => null,
         headerRight: () => (
@@ -63,16 +63,16 @@ function DrawerNavigator() {
               padding: 10
             }}
           >
-            <Ionicons name="reorder-three" size={45} color={theme.colors.card} />
+            <Ionicons name="reorder-three" size={45} color="#CD5C5C" />
           </TouchableOpacity>
         ),
         drawerPosition: 'right',
         drawerStyle: {
-          backgroundColor: theme.colors.primary,
+          backgroundColor: '#CD5C5C',
           width: 300,
         },
-        drawerActiveTintColor: theme.colors.card,
-        drawerInactiveTintColor: theme.colors.card,
+        drawerActiveTintColor: '#fff',
+        drawerInactiveTintColor: '#fff',
         drawerLabelStyle: {
           fontSize: 22,
           fontWeight: '500',
@@ -85,7 +85,7 @@ function DrawerNavigator() {
           paddingVertical: 5,
         },
         sceneContainerStyle: {
-          backgroundColor: theme.colors.background
+          backgroundColor: '#FFFFFF'
         },
         overlayColor: 'transparent',
       })}
