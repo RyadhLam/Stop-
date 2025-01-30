@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Poppins_700Bold, Poppins_500Medium } from '@expo-google-fonts/poppins';
 
@@ -18,24 +18,15 @@ export default function LoginScreen({ navigation }) {
       style={styles.container}
     >
       <View style={styles.content}>
-        <Text style={styles.title}>Mon Cercle</Text>
+        <View style={styles.logoContainer}>
+          <Image 
+            source={require('../assets/Logo.png')} 
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
         
         <View style={styles.formContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="#666"
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          
-          <TextInput
-            style={styles.input}
-            placeholder="Mot de passe"
-            placeholderTextColor="#666"
-            secureTextEntry
-          />
-
           <TouchableOpacity 
             style={styles.loginButton}
             onPress={() => navigation.navigate('Home')}
@@ -65,26 +56,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-  title: {
-    fontFamily: 'Poppins_700Bold',
-    fontSize: 32,
-    color: '#000000',
-    marginBottom: 40,
-  },
   formContainer: {
     width: '100%',
     maxWidth: 300,
     alignItems: 'center',
-  },
-  input: {
-    width: '100%',
-    height: 50,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: 25,
-    paddingHorizontal: 20,
-    marginBottom: 15,
-    fontSize: 16,
-    fontFamily: 'Poppins_500Medium',
+    marginTop: -20,
   },
   loginButton: {
     width: '100%',
@@ -117,5 +93,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins_500Medium',
     textDecorationLine: 'underline',
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 50,
+    marginTop: 100,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.35,
+    shadowRadius: 15,
+    elevation: 15,
+  },
+  logo: {
+    width: 500,
+    height: 500,
   },
 }); 
