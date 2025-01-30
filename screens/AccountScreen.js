@@ -1,268 +1,164 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import BackgroundGradient from '../components/BackgroundGradient';
 import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
+import MapView, { Marker } from 'react-native-maps';
 
 export default function AccountScreen() {
-  const [userInfo, setUserInfo] = useState({
-    nom: "Dupont",
-    prenom: "Jean",
-    email: "jean.dupont@email.com",
-    telephone: "06 12 34 56 78",
-    photo: null
+  const navigation = useNavigation();
+  const [userPhoto, setUserPhoto] = useState(null);
+  const [userLocation, setUserLocation] = useState({
+    latitude: 48.8566,
+    longitude: 2.3522,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
   });
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedInfo, setEditedInfo] = useState({...userInfo});
 
   const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-    if (status !== 'granted') {
-      Alert.alert('Permission refusée', 'Nous avons besoin de votre permission pour accéder à vos photos');
-      return;
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setUserPhoto(result.assets[0].uri);
     }
-
-    Alert.alert(
-      "Modifier la photo",
-      "Choisissez une option",
-      [
-        {
-          text: "Prendre une photo",
-          onPress: async () => {
-            const { status } = await ImagePicker.requestCameraPermissionsAsync();
-            if (status !== 'granted') {
-              Alert.alert('Permission refusée', 'Nous avons besoin de votre permission pour utiliser la caméra');
-              return;
-            }
-            const result = await ImagePicker.launchCameraAsync({
-              allowsEditing: true,
-              aspect: [1, 1],
-              quality: 1,
-            });
-            if (!result.canceled) {
-              setUserInfo(prev => ({
-                ...prev,
-                photo: result.assets[0].uri
-              }));
-            }
-          }
-        },
-        {
-          text: "Choisir dans la galerie",
-          onPress: async () => {
-            const result = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.Images,
-              allowsEditing: true,
-              aspect: [1, 1],
-              quality: 1,
-            });
-            if (!result.canceled) {
-              setUserInfo(prev => ({
-                ...prev,
-                photo: result.assets[0].uri
-              }));
-            }
-          }
-        },
-        {
-          text: "Supprimer la photo",
-          style: 'destructive',
-          onPress: () => {
-            setUserInfo(prev => ({
-              ...prev,
-              photo: null
-            }));
-          }
-        },
-        {
-          text: "Annuler",
-          style: 'cancel'
-        }
-      ]
-    );
   };
-
-  const handleEdit = () => {
-    if (isEditing) {
-      // Sauvegarder les modifications
-      setUserInfo(editedInfo);
-      Alert.alert("Succès", "Vos informations ont été mises à jour");
-    }
-    setIsEditing(!isEditing);
-  };
-
-  const renderField = (label, value, field, icon) => (
-    <View style={styles.infoRow}>
-      <Ionicons name={icon} size={24} color="#CD5C5C" />
-      <View style={styles.infoTextContainer}>
-        <Text style={styles.infoLabel}>{label}</Text>
-        {isEditing ? (
-          <TextInput
-            style={styles.input}
-            value={editedInfo[field]}
-            onChangeText={(text) => setEditedInfo(prev => ({...prev, [field]: text}))}
-          />
-        ) : (
-          <Text style={styles.infoValue}>{value}</Text>
-        )}
-      </View>
-    </View>
-  );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
+    <BackgroundGradient>
+      <View style={styles.container}>
+        {/* Menu Burger */}
         <TouchableOpacity 
-          style={styles.avatarContainer}
-          onPress={pickImage}
+          style={styles.menuButton}
+          onPress={() => navigation.openDrawer()}
         >
-          {userInfo.photo ? (
-            <Image 
-              source={{ uri: userInfo.photo }} 
-              style={styles.avatar}
-            />
-          ) : (
-            <Ionicons name="person-circle" size={100} color="#fff" />
-          )}
-          <View style={styles.editIconContainer}>
-            <Ionicons name="camera" size={20} color="#fff" />
+          <Ionicons name="reorder-three" size={45} color="#000000" />
+        </TouchableOpacity>
+
+        {/* Conteneur Photo */}
+        <View style={styles.photoContainer}>
+          <TouchableOpacity onPress={pickImage}>
+            {userPhoto ? (
+              <Image source={{ uri: userPhoto }} style={styles.userPhoto} />
+            ) : (
+              <View style={styles.photoPlaceholder}>
+                <Ionicons name="camera" size={40} color="#fff" />
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {/* Conteneur Infos */}
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoTitle}>Mes Informations</Text>
+          <View style={styles.infoRow}>
+            <Ionicons name="person-outline" size={24} color="#000" />
+            <Text style={styles.infoText}>John Doe</Text>
           </View>
-        </TouchableOpacity>
-      </View>
+          <View style={styles.infoRow}>
+            <Ionicons name="mail-outline" size={24} color="#000" />
+            <Text style={styles.infoText}>john.doe@email.com</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Ionicons name="call-outline" size={24} color="#000" />
+            <Text style={styles.infoText}>+33 6 12 34 56 78</Text>
+          </View>
+        </View>
 
-      <View style={styles.infoContainer}>
-        <TouchableOpacity 
-          style={styles.editButton}
-          onPress={handleEdit}
-        >
-          <Ionicons 
-            name={isEditing ? "checkmark" : "create-outline"} 
-            size={24} 
-            color="#fff" 
-          />
-        </TouchableOpacity>
-
-        <View style={styles.infoSection}>
-          {renderField("Nom", userInfo.nom, "nom", "person-outline")}
-          {renderField("Prénom", userInfo.prenom, "prenom", "person-outline")}
-          {renderField("Email", userInfo.email, "email", "mail-outline")}
-          {renderField("Téléphone", userInfo.telephone, "telephone", "call-outline")}
+        {/* Conteneur Map */}
+        <View style={styles.mapContainer}>
+          <Text style={styles.mapTitle}>Ma Position</Text>
+          <MapView
+            style={styles.map}
+            initialRegion={userLocation}
+          >
+            <Marker coordinate={userLocation} />
+          </MapView>
         </View>
       </View>
-    </ScrollView>
+    </BackgroundGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'transparent',
+    paddingTop: 100,
   },
-  header: {
-    height: 200,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#CD5C5C',
-  },
-  avatarContainer: {
-    width: '100%',
-    height: 200,
+  menuButton: {
     position: 'absolute',
-    top: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
+    top: 45,
+    right: 25,
+    padding: 10,
+    zIndex: 999,
   },
-  avatar: {
+  photoContainer: {
+    alignItems: 'center',
+    marginBottom: 30,
+    marginTop: 20,
+  },
+  userPhoto: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    resizeMode: 'cover',
-  },
-  editIconContainer: {
-    position: 'absolute',
-    right: -5,
-    bottom: -5,
-    backgroundColor: '#CD5C5C',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
+    borderWidth: 3,
     borderColor: '#fff',
-    zIndex: 2,
+  },
+  photoPlaceholder: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(0,0,0,0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#fff',
   },
   infoContainer: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    paddingHorizontal: 20,
-    paddingTop: 30,
-    paddingBottom: 50,
-    minHeight: 500,
-    marginTop: -30,
-  },
-  infoSection: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.9)',
     borderRadius: 15,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    margin: 20,
+    marginTop: 20,
+  },
+  infoTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
+    paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
   },
-  infoTextContainer: {
+  infoText: {
     marginLeft: 15,
+    fontSize: 16,
+  },
+  mapContainer: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderRadius: 15,
+    padding: 20,
+    margin: 20,
+    marginTop: 20,
+    height: 200,
+  },
+  mapTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  map: {
     flex: 1,
-  },
-  infoLabel: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
-  },
-  infoValue: {
-    fontSize: 16,
-    color: '#000',
-    fontWeight: '500',
-  },
-  editButton: {
-    position: 'absolute',
-    right: 30,
-    top: -20,
-    backgroundColor: '#CD5C5C',
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    zIndex: 2,
-  },
-  input: {
-    fontSize: 16,
-    color: '#000',
-    fontWeight: '500',
-    borderBottomWidth: 1,
-    borderBottomColor: '#CD5C5C',
-    paddingVertical: 4,
-    marginTop: 2,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
 }); 

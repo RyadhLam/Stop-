@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Switch, ScrollView } from 'react-native';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import BackgroundGradient from '../components/BackgroundGradient';
 
 export default function SettingsScreen() {
   const [settings, setSettings] = useState({
@@ -52,39 +53,41 @@ export default function SettingsScreen() {
   ];
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.settingsContainer}>
-        {settingsItems.map((item) => (
-          <View key={item.key} style={styles.settingItem}>
-            <View style={styles.settingIcon}>
-              <Ionicons name={item.icon} size={24} color="#CD5C5C" />
+    <BackgroundGradient>
+      <ScrollView style={styles.container}>
+        <View style={styles.settingsContainer}>
+          {settingsItems.map((item) => (
+            <View key={item.key} style={styles.settingItem}>
+              <View style={styles.settingIcon}>
+                <Ionicons name={item.icon} size={24} color="#CD5C5C" />
+              </View>
+              <View style={styles.settingText}>
+                <Text style={styles.settingTitle}>{item.title}</Text>
+                <Text style={styles.settingDescription}>{item.description}</Text>
+              </View>
+              <Switch
+                value={settings[item.key]}
+                onValueChange={() => toggleSetting(item.key)}
+                trackColor={{ false: '#767577', true: '#CD5C5C' }}
+                thumbColor={settings[item.key] ? '#fff' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                style={styles.switch}
+              />
             </View>
-            <View style={styles.settingText}>
-              <Text style={styles.settingTitle}>{item.title}</Text>
-              <Text style={styles.settingDescription}>{item.description}</Text>
-            </View>
-            <Switch
-              value={settings[item.key]}
-              onValueChange={() => toggleSetting(item.key)}
-              trackColor={{ false: '#767577', true: '#CD5C5C' }}
-              thumbColor={settings[item.key] ? '#fff' : '#f4f3f4'}
-              ios_backgroundColor="#3e3e3e"
-              style={styles.switch}
-            />
-          </View>
-        ))}
-      </View>
-    </ScrollView>
+          ))}
+        </View>
+      </ScrollView>
+    </BackgroundGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'transparent',
   },
   settingsContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     marginTop: 20,
     paddingHorizontal: 20,
     paddingTop: 30,

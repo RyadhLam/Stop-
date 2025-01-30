@@ -125,30 +125,26 @@ function DrawerNavigator() {
       <Drawer.Screen 
         name="Circle" 
         component={CircleScreen} 
-        options={{ title: 'Mon Cercle' }}
+        options={({ navigation }) => ({
+          title: 'Mon Cercle',
+          headerShown: false,
+        })}
       />
       <Drawer.Screen 
         name="Account" 
         component={AccountScreen} 
-        options={({ navigation }) => ({ 
+        options={({ navigation }) => ({
           title: 'Mon Compte',
-          headerShown: true,
-          headerStyle: {
-            backgroundColor: '#FFFFFF',
-            height: 150,
-            elevation: 0,
-            shadowOpacity: 0,
-            borderBottomWidth: 0,
-          },
-          headerTitle: '',
-          headerLeft: () => null,
+          headerShown: false,
           headerRight: () => (
             <TouchableOpacity 
               onPress={() => navigation.openDrawer()}
               style={{ 
-                marginRight: 25,
-                marginTop: 15,
-                padding: 10
+                position: 'absolute',
+                top: 45,
+                right: 25,
+                padding: 10,
+                zIndex: 999,
               }}
             >
               <Ionicons name="reorder-three" size={45} color="#000000" />
