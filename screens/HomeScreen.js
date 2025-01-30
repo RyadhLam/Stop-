@@ -2,8 +2,15 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, Animated, Modal, Dimen
 import { useState, useRef, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
+import { useFonts, Poppins_700Bold, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function HomeScreen({ navigation }) {
+  let [fontsLoaded] = useFonts({
+    Poppins_700Bold,
+    Poppins_600SemiBold,
+  });
+
   const [status, setStatus] = useState('normal');
   const [showHelp, setShowHelp] = useState(false);
   const slideAnim = useRef(new Animated.Value(Dimensions.get('window').height)).current;
@@ -111,8 +118,15 @@ export default function HomeScreen({ navigation }) {
     // Par exemple via une API ou Firebase
   };
 
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={['#34c7f5', '#7ec09b', '#c8b8a2']}
+      style={styles.container}
+    >
       <Animated.View style={[
         styles.pulseContainer,
         {
@@ -209,17 +223,17 @@ export default function HomeScreen({ navigation }) {
           </Animated.View>
         </TouchableOpacity>
       </Modal>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
     paddingBottom: 150,
+    paddingTop: 150,
   },
   alertButton: {
     width: 180,

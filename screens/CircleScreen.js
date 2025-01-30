@@ -116,113 +116,119 @@ export default function CircleScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Cercle central (utilisateur) */}
-      <View style={styles.centerCircle}>
-        <Text style={styles.centerText}>MOI</Text>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Mon cercle</Text>
       </View>
+      
+      <View style={styles.circleContainer}>
+        {/* Cercle central (utilisateur) */}
+        <View style={styles.centerCircle}>
+          <Text style={styles.centerText}>MOI</Text>
+        </View>
 
-      {/* Branches et contacts */}
-      {contacts.map((contact, index) => (
-        <View
-          key={contact.id}
-          style={[
-            styles.branch,
-            {
-              transform: [
-                { rotate: `${(360 / Math.max(contacts.length, 1)) * index}deg` },
-              ],
-            },
-          ]}
-        >
-          <TouchableOpacity 
-            style={styles.contactCircle}
-            onPress={() => openContactInfo(contact)}
+        {/* Branches et contacts */}
+        {contacts.map((contact, index) => (
+          <View
+            key={contact.id}
+            style={[
+              styles.branch,
+              {
+                transform: [
+                  { rotate: `${(360 / Math.max(contacts.length, 1)) * index}deg` },
+                  ],
+                },
+              ]}
           >
-            {contact.photo ? (
-              <Image 
-                source={{ uri: contact.photo }} 
-                style={styles.contactPhoto}
-              />
-            ) : (
-              <Text style={styles.contactText}>{contact.name}</Text>
-            )}
             <TouchableOpacity 
-              style={styles.editPhotoButton}
-              onPress={() => pickImage(contact.id)}
+              style={styles.contactCircle}
+              onPress={() => openContactInfo(contact)}
             >
-              <Ionicons name="camera" size={16} color="#CD5C5C" />
+              {contact.photo ? (
+                <Image 
+                  source={{ uri: contact.photo }} 
+                  style={styles.contactPhoto}
+                />
+              ) : (
+                <Text style={styles.contactText}>{contact.name}</Text>
+              )}
+              <TouchableOpacity 
+                style={styles.editPhotoButton}
+                onPress={() => pickImage(contact.id)}
+              >
+                <Ionicons name="camera" size={16} color="#CD5C5C" />
+              </TouchableOpacity>
             </TouchableOpacity>
-          </TouchableOpacity>
-        </View>
-      ))}
-
-      {/* Modal d'informations du contact */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity 
-              style={styles.closeModalButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Ionicons name="close" size={24} color="#CD5C5C" />
-            </TouchableOpacity>
-
-            {selectedContact && (
-              <>
-                <View style={styles.contactHeader}>
-                  <TouchableOpacity 
-                    style={styles.contactAvatar}
-                    onPress={() => pickImage(selectedContact.id)}
-                  >
-                    {selectedContact.photo ? (
-                      <Image 
-                        source={{ uri: selectedContact.photo }} 
-                        style={styles.modalPhoto}
-                      />
-                    ) : (
-                      <Ionicons name="person" size={40} color="#CD5C5C" />
-                    )}
-                    <View style={styles.editIconContainer}>
-                      <Ionicons name="camera" size={16} color="#fff" />
-                    </View>
-                  </TouchableOpacity>
-                  <Text style={styles.contactName}>{selectedContact.name}</Text>
-                </View>
-
-                <View style={styles.contactInfo}>
-                  <View style={styles.infoRow}>
-                    <Ionicons name="call-outline" size={24} color="#CD5C5C" />
-                    <Text style={styles.infoText}>{selectedContact.phone}</Text>
-                  </View>
-                  
-                  <View style={styles.infoRow}>
-                    <Ionicons name="mail-outline" size={24} color="#CD5C5C" />
-                    <Text style={styles.infoText}>{selectedContact.email}</Text>
-                  </View>
-                  
-                  <View style={styles.infoRow}>
-                    <Ionicons name="people-outline" size={24} color="#CD5C5C" />
-                    <Text style={styles.infoText}>{selectedContact.relation}</Text>
-                  </View>
-                </View>
-              </>
-            )}
           </View>
-        </View>
-      </Modal>
+        ))}
 
-      {/* Bouton d'ajout */}
-      <TouchableOpacity 
-        style={styles.addButton}
-        onPress={addContact}
-      >
-        <Ionicons name="add-circle" size={60} color="#fff" />
-      </TouchableOpacity>
+        {/* Modal d'informations du contact */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <TouchableOpacity 
+                style={styles.closeModalButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Ionicons name="close" size={24} color="#CD5C5C" />
+              </TouchableOpacity>
+
+              {selectedContact && (
+                <>
+                  <View style={styles.contactHeader}>
+                    <TouchableOpacity 
+                      style={styles.contactAvatar}
+                      onPress={() => pickImage(selectedContact.id)}
+                    >
+                      {selectedContact.photo ? (
+                        <Image 
+                          source={{ uri: selectedContact.photo }} 
+                          style={styles.modalPhoto}
+                        />
+                      ) : (
+                        <Ionicons name="person" size={40} color="#CD5C5C" />
+                      )}
+                      <View style={styles.editIconContainer}>
+                        <Ionicons name="camera" size={16} color="#fff" />
+                      </View>
+                    </TouchableOpacity>
+                    <Text style={styles.contactName}>{selectedContact.name}</Text>
+                  </View>
+
+                  <View style={styles.contactInfo}>
+                    <View style={styles.infoRow}>
+                      <Ionicons name="call-outline" size={24} color="#CD5C5C" />
+                      <Text style={styles.infoText}>{selectedContact.phone}</Text>
+                    </View>
+                    
+                    <View style={styles.infoRow}>
+                      <Ionicons name="mail-outline" size={24} color="#CD5C5C" />
+                      <Text style={styles.infoText}>{selectedContact.email}</Text>
+                    </View>
+                    
+                    <View style={styles.infoRow}>
+                      <Ionicons name="people-outline" size={24} color="#CD5C5C" />
+                      <Text style={styles.infoText}>{selectedContact.relation}</Text>
+                    </View>
+                  </View>
+                </>
+              )}
+            </View>
+          </View>
+        </Modal>
+
+        {/* Bouton d'ajout */}
+        <TouchableOpacity 
+          style={styles.addButton}
+          onPress={addContact}
+        >
+          <Ionicons name="add-circle" size={60} color="#fff" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -231,6 +237,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
+  },
+  titleContainer: {
+    paddingTop: 100,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    backgroundColor: '#FFFFFF',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  circleContainer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },

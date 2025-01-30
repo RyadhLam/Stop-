@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { useFonts, Poppins_700Bold } from '@expo-google-fonts/poppins';
 
 import HomeScreen from './screens/HomeScreen';
 import CircleScreen from './screens/CircleScreen';
@@ -37,6 +38,9 @@ function CustomDrawerContent(props) {
 
 function DrawerNavigator() {
   const theme = useTheme();
+  let [fontsLoaded] = useFonts({
+    Poppins_700Bold,
+  });
 
   return (
     <Drawer.Navigator 
@@ -45,14 +49,33 @@ function DrawerNavigator() {
       screenOptions={({ navigation }) => ({
         headerShown: true,
         headerStyle: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: 'transparent',
           height: 150,
           elevation: 0,
           shadowOpacity: 0,
           borderBottomWidth: 0,
         },
-        headerTintColor: '#CD5C5C',
-        headerTitle: '',
+        headerTransparent: true,
+        headerTintColor: '#000000',
+        headerTitle: () => (
+          <View style={{ 
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            paddingTop: 15,
+          }}>
+            <Text style={{
+              fontFamily: fontsLoaded ? 'Poppins_700Bold' : undefined,
+              fontSize: 24,
+              color: '#000000',
+              marginLeft: 25,
+            }}>
+              Mon cercle
+            </Text>
+          </View>
+        ),
         headerLeft: () => null,
         headerRight: () => (
           <TouchableOpacity 
@@ -63,21 +86,26 @@ function DrawerNavigator() {
               padding: 10
             }}
           >
-            <Ionicons name="reorder-three" size={45} color="#CD5C5C" />
+            <Ionicons name="reorder-three" size={45} color="#000000" />
           </TouchableOpacity>
         ),
         drawerPosition: 'right',
         drawerStyle: {
-          backgroundColor: '#CD5C5C',
+          backgroundColor: 'rgba(128, 128, 128, 0.7)',
           width: 300,
         },
-        drawerActiveTintColor: '#fff',
-        drawerInactiveTintColor: '#fff',
+        overlayColor: 'rgba(0, 0, 0, 0.3)',
+        drawerActiveTintColor: '#ffffff',
+        drawerInactiveTintColor: '#ffffff',
         drawerLabelStyle: {
           fontSize: 22,
-          fontWeight: '500',
+          fontWeight: '600',
           marginLeft: 12,
           marginVertical: 8,
+          color: '#ffffff',
+          textShadowColor: 'rgba(0, 0, 0, 0.75)',
+          textShadowOffset: { width: -1, height: 1 },
+          textShadowRadius: 10,
         },
         drawerItemStyle: {
           marginVertical: 5,
@@ -85,9 +113,8 @@ function DrawerNavigator() {
           paddingVertical: 5,
         },
         sceneContainerStyle: {
-          backgroundColor: '#FFFFFF'
+          backgroundColor: 'transparent',
         },
-        overlayColor: 'transparent',
       })}
     >
       <Drawer.Screen 
@@ -103,7 +130,31 @@ function DrawerNavigator() {
       <Drawer.Screen 
         name="Account" 
         component={AccountScreen} 
-        options={{ title: 'Mon Compte' }}
+        options={({ navigation }) => ({ 
+          title: 'Mon Compte',
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: '#FFFFFF',
+            height: 150,
+            elevation: 0,
+            shadowOpacity: 0,
+            borderBottomWidth: 0,
+          },
+          headerTitle: '',
+          headerLeft: () => null,
+          headerRight: () => (
+            <TouchableOpacity 
+              onPress={() => navigation.openDrawer()}
+              style={{ 
+                marginRight: 25,
+                marginTop: 15,
+                padding: 10
+              }}
+            >
+              <Ionicons name="reorder-three" size={45} color="#000000" />
+            </TouchableOpacity>
+          ),
+        })}
       />
       <Drawer.Screen 
         name="Settings" 
