@@ -11,6 +11,7 @@ import HomeScreen from './screens/HomeScreen';
 import CircleScreen from './screens/CircleScreen';
 import AccountScreen from './screens/AccountScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import LoginScreen from './screens/LoginScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -45,7 +46,7 @@ function DrawerNavigator() {
   return (
     <Drawer.Navigator 
       drawerContent={(props) => <CustomDrawerContent {...props} />}
-      initialRouteName="Home"
+      initialRouteName="Login"
       screenOptions={({ navigation }) => ({
         headerShown: true,
         headerStyle: {
@@ -159,6 +160,14 @@ function DrawerNavigator() {
           title: 'Paramètres',
           drawerItemStyle: { height: 0 }
         }} 
+      />
+      <Drawer.Screen 
+        name="Login" 
+        component={LoginScreen}
+        options={{
+          headerShown: false,
+          drawerItemStyle: { display: 'none' }
+        }}
       />
     </Drawer.Navigator>
   );

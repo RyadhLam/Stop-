@@ -1,7 +1,8 @@
-import { View, Text, StyleSheet, Switch, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Switch, ScrollView, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import BackgroundGradient from '../components/BackgroundGradient';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SettingsScreen() {
   const [settings, setSettings] = useState({
@@ -18,6 +19,8 @@ export default function SettingsScreen() {
       [key]: !prev[key]
     }));
   };
+
+  const navigation = useNavigation();
 
   const settingsItems = [
     {
@@ -49,6 +52,12 @@ export default function SettingsScreen() {
       title: 'Alertes d\'urgence',
       description: 'Recevoir les alertes d\'urgence',
       icon: 'warning-outline'
+    },
+    {
+      key: 'logout',
+      title: 'Déconnexion',
+      description: 'Se déconnecter de l\'application',
+      icon: 'log-out-outline'
     }
   ];
 
@@ -75,6 +84,12 @@ export default function SettingsScreen() {
               />
             </View>
           ))}
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('Login')}
+            style={styles.logoutButton}
+          >
+            <Text style={styles.logoutText}>Déconnexion</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </BackgroundGradient>
@@ -125,5 +140,17 @@ const styles = StyleSheet.create({
   },
   switch: {
     marginLeft: 10,
-  }
+  },
+  logoutButton: {
+    backgroundColor: '#CD5C5C',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  logoutText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+  },
 }); 
