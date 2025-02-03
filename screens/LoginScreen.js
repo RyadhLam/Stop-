@@ -14,7 +14,7 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <LinearGradient
-      colors={['#34c7f5', '#7ec09b', '#c8b8a2']}
+      colors={['#fdbfd5', '#ebc6de', '#c8b8a2']}
       style={styles.container}
     >
       <View style={styles.content}>
@@ -23,6 +23,7 @@ export default function LoginScreen({ navigation }) {
             source={require('../assets/Logo.png')} 
             style={styles.logo}
             resizeMode="contain"
+            fadeDuration={0}
           />
         </View>
         
@@ -110,5 +111,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 500,
     height: 500,
+    resizeMode: 'contain',
+    transform: [{ scale: 1.0 }],
   },
 }); 

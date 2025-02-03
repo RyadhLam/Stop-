@@ -1,9 +1,12 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Animated, Modal, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Animated, Modal, Dimensions, ScrollView, Image } from 'react-native';
 import { useState, useRef, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useFonts, Poppins_700Bold, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
 import { LinearGradient } from 'expo-linear-gradient';
+
+const windowWidth = Dimensions.get('window').width;
+const CARD_WIDTH = windowWidth * 0.8;
 
 export default function HomeScreen({ navigation }) {
   let [fontsLoaded] = useFonts({
@@ -17,6 +20,14 @@ export default function HomeScreen({ navigation }) {
   const [location, setLocation] = useState(null);
   const [emergencyActive, setEmergencyActive] = useState(false);
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const [isWarning, setIsWarning] = useState(false);
+  const pulseAnimations = [
+    useRef(new Animated.Value(1)).current,
+    useRef(new Animated.Value(1)).current,
+    useRef(new Animated.Value(1)).current,
+  ];
+
+  const scrollViewRef = useRef(null);
 
   const statusItems = [
     { 
@@ -42,6 +53,27 @@ export default function HomeScreen({ navigation }) {
       color: '#000000',
       text: 'Critique',
       icon: 'flash-outline'
+    }
+  ];
+
+  const carouselItems = [
+    {
+      id: 1,
+      title: "ALERTE",
+      image: require('../assets/icons8-alert-50.png'),
+      color: "#FF0000"
+    },
+    {
+      id: 2,
+      title: "APPEL",
+      image: require('../assets/icons8-heart-50.png'),
+      color: "#000000"
+    },
+    {
+      id: 3,
+      title: "MESSAGE",
+      image: require('../assets/icons8-spock-50.png'),
+      color: "#000000"
     }
   ];
 
@@ -98,6 +130,29 @@ export default function HomeScreen({ navigation }) {
     ).start();
   };
 
+  const startWarningAnimation = () => {
+    setIsWarning(true);
+    pulseAnimations.forEach((anim, index) => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(index * 400),
+          Animated.parallel([
+            Animated.timing(anim, {
+              toValue: 2,
+              duration: 1500,
+              useNativeDriver: true,
+            }),
+            Animated.timing(anim, {
+              toValue: 0,
+              duration: 1500,
+              useNativeDriver: true,
+            }),
+          ]),
+        ])
+      ).start();
+    });
+  };
+
   const handleEmergency = async () => {
     if (!location) {
       Alert.alert('Erreur', 'Impossible d\'obtenir votre position');
@@ -124,29 +179,54 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <LinearGradient
-      colors={['#34c7f5', '#7ec09b', '#c8b8a2']}
+      colors={['#FFFFFF', '#F8F8F8', '#F0F0F0']}
       style={styles.container}
     >
-      <Animated.View style={[
-        styles.pulseContainer,
-        {
-          transform: [{ scale: emergencyActive ? pulseAnim : 1 }],
-        }
-      ]}>
+      <View style={styles.carouselContainer}>
         <TouchableOpacity 
-          style={[
-            styles.alertButton
-          ]}
-          onPress={handleEmergency}
+          style={styles.arrowButton}
+          onPress={() => scrollViewRef.current.scrollTo({ x: 0, animated: true })}
         >
-          <Ionicons 
-            name={statusItems.find(item => item.id === status).icon} 
-            size={50} 
-            color="#FFFFFF" 
-          />
-          <Text style={styles.buttonText}>ALERTE</Text>
+          <Ionicons name="chevron-back" size={30} color="rgba(128, 128, 128, 0.6)" />
         </TouchableOpacity>
-      </Animated.View>
+
+        <ScrollView
+          ref={scrollViewRef}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+          decelerationRate="fast"
+          snapToInterval={windowWidth * 0.8 + 20}
+        >
+          {carouselItems.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={[styles.carouselItem, { backgroundColor: 'transparent' }]}
+              onPress={() => {
+                if (item.id === 1) startWarningAnimation();
+              }}
+            >
+              <Image 
+                source={item.image}
+                style={styles.itemImage}
+                resizeMode="contain"
+              />
+              <Text style={styles.carouselText}>{item.title}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        <TouchableOpacity 
+          style={[styles.arrowButton, styles.rightArrow]}
+          onPress={() => {
+            const lastItemOffset = (carouselItems.length - 1) * (windowWidth * 0.8 + 20);
+            scrollViewRef.current.scrollTo({ x: lastItemOffset, animated: true });
+          }}
+        >
+          <Ionicons name="chevron-forward" size={30} color="rgba(128, 128, 128, 0.6)" />
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.statusContainer}>
         <Text style={styles.statusText}>
@@ -158,26 +238,12 @@ export default function HomeScreen({ navigation }) {
         >
           <Ionicons name="help-circle" size={28} color="#CD5C5C" />
         </TouchableOpacity>
-        <View style={styles.buttonsContainer}>
-          <View style={styles.statusButtons}>
-            {statusItems.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                style={[
-                  styles.statusButton,
-                  { transform: [{ scale: status === item.id ? 1.1 : 1 }] }
-                ]}
-                onPress={() => handleStatusChange(item.id)}
-              >
-                {status === item.id && (
-                  <View style={styles.selectedOverlay}>
-                    <Ionicons name={item.icon} size={30} color="#FFFFFF" />
-                  </View>
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+        <LinearGradient
+          colors={['#fdbfd5', '#ebc6de', '#FAFAFA']}
+          style={styles.buttonsContainer}
+        >
+          <Text style={styles.alertText}>ALERTE</Text>
+        </LinearGradient>
       </View>
 
       <Modal
@@ -235,25 +301,50 @@ const styles = StyleSheet.create({
     paddingBottom: 150,
     paddingTop: 150,
   },
-  alertButton: {
-    width: 180,
+  carouselContainer: {
+    position: 'absolute',
+    top: '60%',
+    left: 0,
+    right: 0,
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    transform: [{ translateY: -100 }],
+  },
+  scrollContent: {
+    paddingHorizontal: 10,
+    alignItems: 'center',
+  },
+  arrowButton: {
+    position: 'absolute',
+    left: 30,
+    zIndex: 2,
+    backgroundColor: 'transparent',
+    borderRadius: 20,
+    padding: 8,
+  },
+  rightArrow: {
+    left: undefined,
+    right: 30,
+  },
+  itemImage: {
+    width: 80,
+    height: 80,
+    marginBottom: 10,
+    tintColor: '#FFFFFF',
+  },
+  carouselItem: {
+    width: windowWidth * 0.7,
     height: 180,
-    borderRadius: 90,
+    marginHorizontal: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#000000',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 15,
   },
-  buttonText: {
+  carouselText: {
     color: '#FFFFFF',
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     marginTop: 10,
   },
@@ -290,51 +381,27 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   buttonsContainer: {
-    backgroundColor: '#f5f5f5',
     borderRadius: 25,
     padding: 20,
     width: '90%',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 8,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 15,
     borderWidth: 1,
     borderColor: '#eaeaea',
-  },
-  statusButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    paddingHorizontal: 5,
-    gap: 15,
-  },
-  statusButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#000000',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    elevation: 6,
-    justifyContent: 'center',
     alignItems: 'center',
-  },
-  selectedOverlay: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 27.5,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
-    alignItems: 'center',
+  },
+  alertText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#000000',
+    letterSpacing: 2,
   },
   modalOverlay: {
     flex: 1,
@@ -395,9 +462,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     lineHeight: 20,
-  },
-  pulseContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 }); 

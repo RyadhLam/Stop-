@@ -121,7 +121,21 @@ function DrawerNavigator() {
       <Drawer.Screen 
         name="Home" 
         component={HomeScreen} 
-        options={{ title: 'Accueil' }}
+        options={({ navigation }) => ({
+          headerTitle: '',
+          headerRight: () => (
+            <TouchableOpacity 
+              onPress={() => navigation.openDrawer()}
+              style={{ 
+                marginRight: 25,
+                marginTop: 15,
+                padding: 10
+              }}
+            >
+              <Ionicons name="reorder-three" size={45} color="#000000" />
+            </TouchableOpacity>
+          ),
+        })}
       />
       <Drawer.Screen 
         name="Circle" 

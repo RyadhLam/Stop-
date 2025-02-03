@@ -220,6 +220,17 @@ export default function CircleScreen() {
             <Ionicons name="add-circle" size={60} color="#fff" />
           </TouchableOpacity>
         </View>
+
+        {/* Bouton Reset */}
+        <TouchableOpacity 
+          style={styles.resetButton}
+          onPress={() => {
+            setContacts([]); // Reset les contacts
+          }}
+        >
+          <Ionicons name="refresh-circle" size={45} color="#000000" />
+          <Text style={styles.resetText}>Reset</Text>
+        </TouchableOpacity>
       </View>
     </BackgroundGradient>
   );
@@ -426,5 +437,26 @@ const styles = StyleSheet.create({
     right: 25,
     padding: 10,
     zIndex: 999,
+  },
+  resetButton: {
+    position: 'absolute',
+    bottom: 30,
+    left: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+  },
+  resetText: {
+    color: '#000000',
+    fontSize: 12,
+    marginTop: -5,
+    fontWeight: 'bold',
   },
 }); 
