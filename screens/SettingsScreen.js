@@ -65,25 +65,28 @@ export default function SettingsScreen() {
     <BackgroundGradient>
       <ScrollView style={styles.container}>
         <View style={styles.settingsContainer}>
-          {settingsItems.map((item) => (
-            <View key={item.key} style={styles.settingItem}>
-              <View style={styles.settingIcon}>
-                <Ionicons name={item.icon} size={24} color="#CD5C5C" />
+          <View style={styles.settingsList}>
+            {settingsItems.map((item) => (
+              <View key={item.key} style={styles.settingItem}>
+                <View style={styles.settingIcon}>
+                  <Ionicons name={item.icon} size={24} color="#CD5C5C" />
+                </View>
+                <View style={styles.settingText}>
+                  <Text style={styles.settingTitle}>{item.title}</Text>
+                  <Text style={styles.settingDescription}>{item.description}</Text>
+                </View>
+                <Switch
+                  value={settings[item.key]}
+                  onValueChange={() => toggleSetting(item.key)}
+                  trackColor={{ false: '#767577', true: '#CD5C5C' }}
+                  thumbColor={settings[item.key] ? '#fff' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  style={styles.switch}
+                />
               </View>
-              <View style={styles.settingText}>
-                <Text style={styles.settingTitle}>{item.title}</Text>
-                <Text style={styles.settingDescription}>{item.description}</Text>
-              </View>
-              <Switch
-                value={settings[item.key]}
-                onValueChange={() => toggleSetting(item.key)}
-                trackColor={{ false: '#767577', true: '#CD5C5C' }}
-                thumbColor={settings[item.key] ? '#fff' : '#f4f3f4'}
-                ios_backgroundColor="#3e3e3e"
-                style={styles.switch}
-              />
-            </View>
-          ))}
+            ))}
+          </View>
+          
           <TouchableOpacity 
             onPress={() => navigation.navigate('Login')}
             style={styles.logoutButton}
@@ -100,27 +103,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',
+    paddingTop: 150,
   },
   settingsContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: 'transparent',
     marginTop: 20,
     paddingHorizontal: 20,
     paddingTop: 30,
     paddingBottom: 50,
-    minHeight: '100%',
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  settingsList: {
+    flex: 1,
   },
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: 'rgba(255, 255, 255, 0.2)',
   },
   settingIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 15,
@@ -131,11 +139,11 @@ const styles = StyleSheet.create({
   settingTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: '#000',
   },
   settingDescription: {
     fontSize: 14,
-    color: '#666',
+    color: '#333',
     marginTop: 2,
   },
   switch: {
@@ -144,9 +152,11 @@ const styles = StyleSheet.create({
   logoutButton: {
     backgroundColor: '#CD5C5C',
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 25,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 100,
+    marginBottom: 100,
+    marginHorizontal: 30,
   },
   logoutText: {
     fontSize: 16,

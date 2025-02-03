@@ -169,11 +169,22 @@ function DrawerNavigator() {
       />
       <Drawer.Screen 
         name="Settings" 
-        component={SettingsScreen} 
-        options={{ 
-          title: 'Paramètres',
-          drawerItemStyle: { height: 0 }
-        }} 
+        component={SettingsScreen}
+        options={({ navigation }) => ({
+          headerTitle: '',
+          headerRight: () => (
+            <TouchableOpacity 
+              onPress={() => navigation.openDrawer()}
+              style={{ 
+                marginRight: 25,
+                marginTop: 15,
+                padding: 10
+              }}
+            >
+              <Ionicons name="reorder-three" size={45} color="#000000" />
+            </TouchableOpacity>
+          ),
+        })}
       />
       <Drawer.Screen 
         name="Login" 
