@@ -12,197 +12,77 @@ import CircleScreen from './screens/CircleScreen';
 import AccountScreen from './screens/AccountScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import LoginScreen from './screens/LoginScreen';
+import SignUpScreen from './screens/SignUpScreen';
+import CustomDrawerContent from './components/CustomDrawerContent';
 
 const Drawer = createDrawerNavigator();
-
-function CustomDrawerContent(props) {
-  return (
-    <View style={{ flex: 1 }}>
-      <DrawerContentScrollView {...props}>
-        <DrawerItemList {...props} />
-      </DrawerContentScrollView>
-      
-      {/* Settings en bas */}
-      <TouchableOpacity 
-        style={styles.settingsButton}
-        onPress={() => {
-          props.navigation.navigate('Settings');
-          props.navigation.closeDrawer();
-        }}
-      >
-        <Ionicons name="settings-outline" size={28} color="#fff" />
-        <Text style={styles.settingsText}>Paramètres</Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
-
-function DrawerNavigator() {
-  const theme = useTheme();
-  let [fontsLoaded] = useFonts({
-    Poppins_700Bold,
-  });
-
-  return (
-    <Drawer.Navigator 
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-      initialRouteName="Login"
-      screenOptions={({ navigation }) => ({
-        headerShown: true,
-        headerStyle: {
-          backgroundColor: 'transparent',
-          height: 150,
-          elevation: 0,
-          shadowOpacity: 0,
-          borderBottomWidth: 0,
-        },
-        headerTransparent: true,
-        headerTintColor: '#000000',
-        headerTitle: () => (
-          <View style={{ 
-            flex: 1,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-            paddingTop: 15,
-          }}>
-            <Text style={{
-              fontFamily: fontsLoaded ? 'Poppins_700Bold' : undefined,
-              fontSize: 24,
-              color: '#000000',
-              marginLeft: 25,
-            }}>
-              Mon cercle
-            </Text>
-          </View>
-        ),
-        headerLeft: () => null,
-        headerRight: () => (
-          <TouchableOpacity 
-            onPress={() => navigation.openDrawer()}
-            style={{ 
-              marginRight: 25,
-              marginTop: 15,
-              padding: 10
-            }}
-          >
-            <Ionicons name="reorder-three" size={45} color="#000000" />
-          </TouchableOpacity>
-        ),
-        drawerPosition: 'right',
-        drawerStyle: {
-          backgroundColor: 'rgba(128, 128, 128, 0.7)',
-          width: 300,
-        },
-        overlayColor: 'rgba(0, 0, 0, 0.3)',
-        drawerActiveTintColor: '#ffffff',
-        drawerInactiveTintColor: '#ffffff',
-        drawerLabelStyle: {
-          fontSize: 22,
-          fontWeight: '600',
-          marginLeft: 12,
-          marginVertical: 8,
-          color: '#ffffff',
-          textShadowColor: 'rgba(0, 0, 0, 0.75)',
-          textShadowOffset: { width: -1, height: 1 },
-          textShadowRadius: 10,
-        },
-        drawerItemStyle: {
-          marginVertical: 5,
-          borderRadius: 10,
-          paddingVertical: 5,
-        },
-        sceneContainerStyle: {
-          backgroundColor: 'transparent',
-        },
-      })}
-    >
-      <Drawer.Screen 
-        name="Home" 
-        component={HomeScreen} 
-        options={({ navigation }) => ({
-          headerTitle: '',
-          headerRight: () => (
-            <TouchableOpacity 
-              onPress={() => navigation.openDrawer()}
-              style={{ 
-                marginRight: 25,
-                marginTop: 15,
-                padding: 10
-              }}
-            >
-              <Ionicons name="reorder-three" size={45} color="#000000" />
-            </TouchableOpacity>
-          ),
-        })}
-      />
-      <Drawer.Screen 
-        name="Circle" 
-        component={CircleScreen} 
-        options={({ navigation }) => ({
-          title: 'Mon Cercle',
-          headerShown: false,
-        })}
-      />
-      <Drawer.Screen 
-        name="Account" 
-        component={AccountScreen} 
-        options={({ navigation }) => ({
-          title: 'Mon Compte',
-          headerShown: false,
-          headerRight: () => (
-            <TouchableOpacity 
-              onPress={() => navigation.openDrawer()}
-              style={{ 
-                position: 'absolute',
-                top: 45,
-                right: 25,
-                padding: 10,
-                zIndex: 999,
-              }}
-            >
-              <Ionicons name="reorder-three" size={45} color="#000000" />
-            </TouchableOpacity>
-          ),
-        })}
-      />
-      <Drawer.Screen 
-        name="Settings" 
-        component={SettingsScreen}
-        options={({ navigation }) => ({
-          headerTitle: '',
-          headerRight: () => (
-            <TouchableOpacity 
-              onPress={() => navigation.openDrawer()}
-              style={{ 
-                marginRight: 25,
-                marginTop: 15,
-                padding: 10
-              }}
-            >
-              <Ionicons name="reorder-three" size={45} color="#000000" />
-            </TouchableOpacity>
-          ),
-        })}
-      />
-      <Drawer.Screen 
-        name="Login" 
-        component={LoginScreen}
-        options={{
-          headerShown: false,
-          drawerItemStyle: { display: 'none' }
-        }}
-      />
-    </Drawer.Navigator>
-  );
-}
 
 export default function App() {
   return (
     <ThemeProvider>
       <NavigationContainer>
-        <DrawerNavigator />
+        <Drawer.Navigator 
+          drawerContent={(props) => <CustomDrawerContent {...props} />}
+          initialRouteName="Login"
+        >
+          <Drawer.Screen 
+            name="Login" 
+            component={LoginScreen}
+            options={{
+              headerShown: false,
+              drawerItemStyle: { display: 'none' }
+            }}
+          />
+          
+          <Drawer.Screen 
+            name="SignUp" 
+            component={SignUpScreen}
+            options={{
+              headerShown: false,
+              drawerItemStyle: { display: 'none' }
+            }}
+          />
+
+          <Drawer.Screen 
+            name="Home" 
+            component={HomeScreen} 
+            options={{ 
+              headerTitle: '',
+              headerRight: ({ navigation }) => (
+                <TouchableOpacity 
+                  onPress={() => navigation.openDrawer()}
+                  style={{ marginRight: 25, marginTop: 15, padding: 10 }}
+                >
+                  <Ionicons name="reorder-three" size={45} color="#000000" />
+                </TouchableOpacity>
+              )
+            }}
+          />
+
+          <Drawer.Screen 
+            name="Circle" 
+            component={CircleScreen} 
+            options={{ 
+              headerTitle: ''
+            }}
+          />
+
+          <Drawer.Screen 
+            name="Account" 
+            component={AccountScreen} 
+            options={{ 
+              headerTitle: ''
+            }}
+          />
+
+          <Drawer.Screen 
+            name="Settings" 
+            component={SettingsScreen}
+            options={{ 
+              headerTitle: ''
+            }}
+          />
+        </Drawer.Navigator>
         <StatusBar style="light" />
       </NavigationContainer>
     </ThemeProvider>

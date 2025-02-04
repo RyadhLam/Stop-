@@ -24,7 +24,8 @@
     "react-native-safe-area-context": "^5.1.0",
     "react-native-screens": "^4.5.0",
     "expo-linear-gradient": "~14.0.2",
-    "react-native-maps": "1.18.0"
+    "react-native-maps": "1.18.0",
+    "@react-native-community/datetimepicker": "8.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
